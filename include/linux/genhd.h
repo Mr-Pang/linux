@@ -213,6 +213,7 @@ struct gendisk {
 	struct kobject integrity_kobj;
 #endif	/* CONFIG_BLK_DEV_INTEGRITY */
 	int node_id;
+	bool is_emmc;
 };
 
 static inline struct gendisk *part_to_disk(struct hd_struct *part)
