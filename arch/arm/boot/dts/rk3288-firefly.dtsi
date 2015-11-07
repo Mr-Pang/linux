@@ -80,7 +80,7 @@
 		compatible = "gpio-leds";
 
 		work {
-			gpios = <&gpio8 1 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio8 2 GPIO_ACTIVE_LOW>;
 			label = "firefly:blue:user";
 			linux,default-trigger = "rc-feedback";
 			pinctrl-names = "default";
@@ -88,14 +88,55 @@
 		};
 
 		power {
-			gpios = <&gpio8 2 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio8 1 GPIO_ACTIVE_LOW>;
 			label = "firefly:green:power";
 			linux,default-trigger = "default-on";
 			pinctrl-names = "default";
 			pinctrl-0 = <&power_led>;
 		};
 	};
+	
+	  
+	wlan {
+			compatible = "wlan-platdata";
+			wifi_chip_type = "ap6335";
+			rockchip,grf = <&grf>;
+			sdio_vref = <1800>;
+			power_pmu_regulator = "vcc_io";
+			power_pmu_enable_level = <1>;
+			vref_pmu_regulator = "vcc_io";
+			vref_pmu_enable_level = <1>;
+			WIFI,poweren_gpio = <&gpio4 28 GPIO_ACTIVE_HIGH>;
+			WIFI,host_wake_irq = <&gpio4 30 GPIO_ACTIVE_HIGH>;
+			status = "okay";
+	};
+		
+	bt {
+			compatible = "bluetooth-platdata";
+			uart_rts_gpios = <&gpio4 19 GPIO_ACTIVE_LOW>;
+			pinctrl-names = "default","rts_gpio";
+			pinctrl-0 = <&uart0_rts>;
+			pinctrl-1 = <&uart0_rts_gpio>;
+			BT,power_gpio = <&gpio4 27 GPIO_ACTIVE_HIGH>;
+			BT,reset_gpio = <&gpio4 29 GPIO_ACTIVE_HIGH>;
+			BT,wake_gpio = <&gpio4 26 GPIO_ACTIVE_HIGH>;
+			BT,wake_host_irq = <&gpio4 31 GPIO_ACTIVE_LOW>;
+			status = "okay";
+	};
 
+	io_domains: io-domains {
+		compatible = "rockchip,rk3288-io-voltage-domain";
+		rockchip,grf = <&grf>;
+
+//		bb-supply = <&vcc33_io>;
+//		dvp-supply = <&vcc_18>;
+		flash0-supply = <&vcc_flash>;
+//		gpio1830-supply = <&vcc33_io>;
+//		gpio30-supply = <&vcc33_io>;
+//		lcdc-supply = <&vcc33_lcd>;
+		wifi-supply = <&vcc_io>;
+	};
+	
 	vcc_sys: vsys-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc_sys";
@@ -401,11 +442,11 @@
 
 	leds {
 		power_led: power-led {
-			rockchip,pins = <8 2 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <8 1 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 
 		work_led: work-led {
-			rockchip,pins = <8 1 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <8 2 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 
@@ -430,6 +471,29 @@
 			rockchip,pins = <0 12 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
+	
+	uart0 {
+		uart0_rts_gpio: uart0-rts-gpio {
+			 rockchip,pins = <4 19 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+	sdio0 {
+		sdio0_gpio: sdio0-gpio {
+			  rockchip,pins = 
+				  <4 25 RK_FUNC_GPIO &pcfg_pull_none>, //CLK
+				  <4 24 RK_FUNC_GPIO &pcfg_pull_up>, //CMD
+				  <4 26 RK_FUNC_GPIO &pcfg_pull_up>, //CD(or DET)
+				  <4 27 RK_FUNC_GPIO &pcfg_pull_up>, //WP(or wrprt)
+				  <4 28 RK_FUNC_GPIO &pcfg_pull_up>, //PWR(or PWREN)
+				  <4 29 RK_FUNC_GPIO &pcfg_pull_up>, //BKPWR
+				  <4 30 RK_FUNC_GPIO &pcfg_pull_up>, //INT(or INTN)
+				  <4 20 RK_FUNC_GPIO &pcfg_pull_up>, //D0
+				  <4 21 RK_FUNC_GPIO &pcfg_pull_up>, //D1
+				  <4 22 RK_FUNC_GPIO &pcfg_pull_up>, //D2
+				  <4 23 RK_FUNC_GPIO &pcfg_pull_up>; //D3
+		};
+	};
+				  
 };
 
 &saradc {
@@ -441,11 +505,15 @@
 	broken-cd;
 	bus-width = <4>;
 	disable-wp;
-	non-removable;
+//	non-removable;
 	num-slots = <1>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&sdio0_bus4>, <&sdio0_cmd>, <&sdio0_clk>;
-	vmmc-supply = <&vcc_18>;
+//	vmmc-supply = <&vcc_18>;
+	clock-frequency = <50000000>;
+//	clock-freq-min-max = <200000 50000000>;
+	cap-sd-highspeed;
+	type-sdio0; //add this flag to distinguish sdio from mmc and sd
 	status = "okay";
 };
 
@@ -476,7 +544,7 @@
 
 &uart0 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&uart0_xfer>, <&uart0_cts>, <&uart0_rts>;
+	pinctrl-0 = <&uart0_xfer>, <&uart0_cts>;
 	status = "okay";
 };
 

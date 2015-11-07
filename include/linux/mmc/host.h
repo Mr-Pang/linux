@@ -116,6 +116,7 @@ struct mmc_host_ops {
 	void	(*set_ios)(struct mmc_host *host, struct mmc_ios *ios);
 	int	(*get_ro)(struct mmc_host *host);
 	int	(*get_cd)(struct mmc_host *host);
+	int	(*set_sdio_status)(struct mmc_host *host, int val);
 
 	void	(*enable_sdio_irq)(struct mmc_host *host, int enable);
 
@@ -378,6 +379,7 @@ int mmc_add_host(struct mmc_host *);
 void mmc_remove_host(struct mmc_host *);
 void mmc_free_host(struct mmc_host *);
 int mmc_of_parse(struct mmc_host *host);
+int mmc_host_rescan(struct mmc_host *host, int val, int irq_type);
 
 static inline void *mmc_priv(struct mmc_host *host)
 {

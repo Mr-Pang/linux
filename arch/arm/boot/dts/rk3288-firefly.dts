@@ -42,7 +42,6 @@
 
 /dts-v1/;
 #include "rk3288-firefly.dtsi"
-
 / {
 	model = "Firefly-RK3288";
 	compatible = "firefly,firefly-rk3288", "rockchip,rk3288";

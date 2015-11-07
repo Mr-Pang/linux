@@ -38,6 +38,7 @@
 #include <linux/of.h>
 #include <linux/of_gpio.h>
 #include <linux/mmc/slot-gpio.h>
+#include <linux/clk-provider.h>
 
 #include "dw_mmc.h"
 
@@ -1446,6 +1447,41 @@ static int dw_mci_get_ro(struct mmc_host *mmc)
 	return read_only;
 }
 
+static int dw_mci_set_sdio_status(struct mmc_host *mmc, int val)
+{
+        struct dw_mci_slot *slot = mmc_priv(mmc);
+        struct dw_mci *host = slot->host;
+	
+	/*struct dw_mci_board *brd = slot->host->pdata;*/
+#if 0
+	if (!(mmc->restrict_caps & RESTRICT_CARD_TYPE_SDIO))
+                return 0;
+#endif                
+        spin_lock_bh(&host->lock);
+
+        if(val)
+                set_bit(DW_MMC_CARD_PRESENT, &slot->flags);
+        else
+                clear_bit(DW_MMC_CARD_PRESENT, &slot->flags);
+
+        spin_unlock_bh(&host->lock);
+#if 1
+        if(test_bit(DW_MMC_CARD_PRESENT, &slot->flags)){
+                if(__clk_is_enabled(host->biu_clk) == false)
+                        clk_prepare_enable(host->biu_clk);
+                if(__clk_is_enabled(host->ciu_clk) == false)
+                        clk_prepare_enable(host->ciu_clk);
+        }else{
+                if(__clk_is_enabled(host->ciu_clk) == true)
+                        clk_disable_unprepare(slot->host->ciu_clk);
+                if(__clk_is_enabled(host->biu_clk) == true)
+                        clk_disable_unprepare(slot->host->biu_clk);
+        }
+#endif
+        mmc_detect_change(slot->mmc, msecs_to_jiffies(1000));
+        return 0;
+}
+
 static int dw_mci_get_cd(struct mmc_host *mmc)
 {
 	int present;
@@ -1569,6 +1605,7 @@ static const struct mmc_host_ops dw_mci_ops = {
 	.start_signal_voltage_switch = dw_mci_switch_voltage,
 	.init_card		= dw_mci_init_card,
 	.prepare_hs400_tuning	= dw_mci_prepare_hs400_tuning,
+	.set_sdio_status 		= dw_mci_set_sdio_status,
 };
 
 static void dw_mci_request_end(struct dw_mci *host, struct mmc_request *mrq)
