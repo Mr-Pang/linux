@@ -679,10 +679,10 @@ static int rockchip_wifi_voltage_select(void)
      */
     if (1) { //rk3288
 	    if (voltage > 2700 && voltage < 3500) {
-	        regmap_write(mrfkill->pdata->grf, RK3288_GRF_IO_VSEL, ((1<<4)<<16)|(0<<4)); //3.3
+	        regmap_write(mrfkill->pdata->grf, RK3288_GRF_IO_VSEL, 0x00100000); //3.3
 	        LOG("%s: wifi & sdio reference voltage: 3.3V\n", __func__);
 	    } else if (voltage  > 1500 && voltage < 1950) {
-	        regmap_write(mrfkill->pdata->grf, RK3288_GRF_IO_VSEL, ((1<<4)<<16)|(1<<4)); //1.8
+	        regmap_write(mrfkill->pdata->grf, RK3288_GRF_IO_VSEL, 0x00100010); //1.8
 	        LOG("%s: wifi & sdio reference voltage: 1.8V\n", __func__);
 	    } else {
 	        LOG("%s: unsupport wifi & sdio reference voltage!\n", __func__);
