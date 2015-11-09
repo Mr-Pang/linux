@@ -80,7 +80,7 @@
 		compatible = "gpio-leds";
 
 		work {
-			gpios = <&gpio8 1 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio8 2 GPIO_ACTIVE_LOW>;
 			label = "firefly:blue:user";
 			linux,default-trigger = "rc-feedback";
 			pinctrl-names = "default";
@@ -88,7 +88,7 @@
 		};
 
 		power {
-			gpios = <&gpio8 2 GPIO_ACTIVE_LOW>;
+			gpios = <&gpio8 1 GPIO_ACTIVE_LOW>;
 			label = "firefly:green:power";
 			linux,default-trigger = "default-on";
 			pinctrl-names = "default";
@@ -401,11 +401,11 @@
 
 	leds {
 		power_led: power-led {
-			rockchip,pins = <8 2 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <8 1 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 
 		work_led: work-led {
-			rockchip,pins = <8 1 RK_FUNC_GPIO &pcfg_pull_none>;
+			rockchip,pins = <8 2 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 
