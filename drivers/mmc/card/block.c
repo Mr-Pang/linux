@@ -2567,7 +2567,8 @@ static int mmc_blk_probe(struct mmc_card *card)
 	md = mmc_blk_alloc(card);
 	if (IS_ERR(md))
 		return PTR_ERR(md);
-
+	
+	md->disk->is_emmc = (card->type == MMC_TYPE_MMC);
 	string_get_size((u64)get_capacity(md->disk), 512, STRING_UNITS_2,
 			cap_str, sizeof(cap_str));
 	pr_info("%s: %s %s %s %s\n",
