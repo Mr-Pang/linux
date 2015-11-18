@@ -535,9 +535,11 @@
 	broken-cd;
 	bus-width = <4>;
 	disable-wp;
-//	non-removable;
+	non-removable;
 	num-slots = <1>;
 	cap-sd-highspeed;
+	keep-power-in-suspend;
+	clock-frequency = <50000000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&sdio0_bus4>, <&sdio0_cmd>, <&sdio0_clk>;
 	vmmc-supply = <&vbat_wl>;
